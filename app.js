@@ -6,7 +6,9 @@ const invalidRequest = require("./routes/invalid-request").getInvalidRequest
 const quizRoute = require("./routes/quiz-route")
 const testRoute = require("./routes/test-route")
 
-app.use(cors())
+app.use(cors({
+    methods: ["GET", "POST", "PATCH", "DELETE"]
+}))
 app.options("*", cors()) // disable cors
 app.use(express.json())
 
