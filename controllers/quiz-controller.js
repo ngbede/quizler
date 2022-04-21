@@ -77,7 +77,11 @@ const createNewQuiz =  (req, res) => {
         Object.keys(err.errors).forEach(msg => {
             const field = err.errors[msg].path
             const validationError = err.errors[msg].kind
-            errors.push(` '${field}' is ${validationError}`)
+            if(validationError === "min") {
+                errors.push(` '${field}' must be greater than 0`)
+            } else {
+                errors.push(` '${field}' is ${validationError}`)
+            }
         })
         const message = err._message
         return res.status(404).json({message: message, invalidFields: errors})
