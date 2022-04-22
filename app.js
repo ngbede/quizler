@@ -5,6 +5,7 @@ const app = express()
 const invalidRequest = require("./routes/invalid-request").getInvalidRequest
 const quizRoute = require("./routes/quiz-route")
 const testRoute = require("./routes/test-route")
+const userRoute = require("./routes/user-route")
 
 app.use(cors({
     methods: ["GET", "POST", "PATCH", "DELETE"]
@@ -14,6 +15,7 @@ app.use(express.json())
 
 app.use("/api", quizRoute)
 app.use("/api", testRoute)
+app.use("/api", userRoute)
 app.use(invalidRequest)
 // create connection to mongodb
 const port = process.env.PORT || 3001

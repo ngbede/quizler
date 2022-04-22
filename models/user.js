@@ -4,15 +4,17 @@ const {Schema} = mongoose
 const userSchema = new Schema({
     name: {
         type: String,
-        required: true
+        required: [true, "name is required"]
     },
     email: {
         type: String,
-        required: true
+        required: [true, "email is required"],
+        unique: [true, "email already exists"],
+        lowercase: true,
     },
-    passwordSalt: {
+    password: {
         type: String,
-        required: true
+        required: [true, "password is required"]
     },
     createdAt: {
         type: Date,
