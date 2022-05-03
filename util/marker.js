@@ -18,6 +18,7 @@ function markTest(questions, answers) {
         } else {
             answers[i]["correct"] = false
         }
+        answers[i]["correctOption"] = questions[i].answer.toUpperCase()
     }
 
     const result = {
