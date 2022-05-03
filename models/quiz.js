@@ -21,7 +21,7 @@ const quizSchema = new Schema({
     },
     code: { // used to access a quiz
         type: String,
-        default: shortid.generate()
+        default: shortid.generate
     },
     questions: { // an array of questions
         type: [],
