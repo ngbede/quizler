@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router()
 const quizController = require("../controllers/quiz-controller")
+const isAuth = require("../middleware/verify-token")
 
-router.get("/", quizController.getMainPath)
-router.get("/quiz", quizController.getQuiz)
-router.get("/quiz/:id", quizController.getQuizViaId)
-router.post("/quiz", quizController.createNewQuiz)
-router.patch("/quiz/:id", quizController.updateQuiz)
-router.delete("/quiz/:id", quizController.deleteQuiz)
+router.get("/", isAuth, quizController.getMainPath)
+router.get("/quiz", isAuth, quizController.getQuiz)
+router.get("/quiz/:id", isAuth, quizController.getQuizViaId)
+router.post("/quiz", isAuth, quizController.createNewQuiz)
+router.patch("/quiz/:id", isAuth, quizController.updateQuiz)
+router.delete("/quiz/:id", isAuth, quizController.deleteQuiz)
 
 module.exports = router
