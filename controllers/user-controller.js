@@ -18,7 +18,7 @@ const signup = (req, res) => {
         }).catch(err => {
             let errorCode = err.code
             let existingMail = err.keyValue.email
-            if (errorCode === 11000) return res.status(404).json({message: `Account with email ${existingMail} already exists`})
+            if (errorCode === 11000) return res.status(404).json({message: `Account already exists`})
             return res.status(500).json({...serverErrorMsg})
         })
     }).catch( err => {
@@ -45,6 +45,7 @@ const login = (req, res) => {
             if (!validPassword) return res.status(401).json({message: "Password is incorrect"})
 
             // if we reach here it means password is correct and we can create signed token for user to access server
+            payload.name = user.name
             const ttl = "72h" // time to live for access token
             const accessToken = jwt.sign({...payload, id: user._id}, process.env.private_key, {expiresIn: ttl})
             const timeStamp = new Date()

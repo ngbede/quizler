@@ -3,6 +3,7 @@ const {Types} = require("mongoose")
 const serverErrorMsg = require("../util/sever-error")
 
 const getMainPath =  (req, res) => {
+    console.log(req.user);
     res.status(200).json({
         message: "Quizler App API"
     })
@@ -16,12 +17,15 @@ const getQuiz = async (req, res) => {
         // run query
         try {
             const data = await query.exec() 
-            data[0].questions.forEach(question => {
-                delete question.answer
-            });
-            if (data.length > 0) return res.status(200).json(data[0])
-            else return res.status(404).json({message: `Quiz with code ${quizCode} doesn't exist`})
-        } catch (error) {
+            if (data.length > 0){
+                data[0].questions.forEach(question => {
+                    delete question.answer
+                }); 
+                return res.status(200).json(data[0])
+            }
+            return res.status(404).json({message: `invalid quiz code`})
+            
+        } catch (err) {
             console.log(err);
             return res.status(500).json(serverErrorMsg)
         }
@@ -97,6 +101,7 @@ const updateQuiz = (req, res) => {
         if (Object.keys(payload).length === 0){
             return res.status(404).json({message: "Invalid request: send a valid request body"})
         } else {
+            // TODO: provide a way to incrementatlly update questions in a quiz i.e don't overwrite everything
             // we don't want to update the code, userId and createdAt fields
             const keys = Object.keys(payload)
             const schemaKeys = Object.keys(Quiz.schema.obj) // get the fields in our schema

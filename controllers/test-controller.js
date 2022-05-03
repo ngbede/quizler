@@ -40,10 +40,9 @@ const uploadTest = (req, res) => {
     .then( _ => {
         const queryTests = Test.exists({email: payload.email.toLowerCase()}).where("quizCode").equals(payload.quizCode)
         queryTests.exec((error, data) => {
-            console.log(error);
             if (error) return res.status(500).json(serverErrorMsg)
             if (data) { // the data could be null
-                return res.status(404).json({message: "Invalid: An email can take only a single test per quiz"})
+                return res.status(404).json({message: "test already taken using email"})
             } else {
                 const quizId = payload.quizId
                 Quiz.findOne({_id: quizId})
