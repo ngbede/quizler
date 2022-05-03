@@ -5,12 +5,17 @@ const app = express()
 const invalidRequest = require("./routes/invalid-request").getInvalidRequest
 const quizRoute = require("./routes/quiz-route")
 const testRoute = require("./routes/test-route")
-const userRoute = require("./routes/user-route")
+const userRoute = require("./routes/user-route");
 
 app.use(cors({
     methods: ["GET", "POST", "PATCH", "DELETE"]
 }))
 app.options("*", cors()) // disable cors
+app.use((req,res,next) => {
+    // enable auth header
+    res.setHeader("Access-Control-Allow-Headers","Content-Type", "Authorization")
+    next()
+})
 app.use(express.json())
 
 app.use("/api", quizRoute)
