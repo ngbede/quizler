@@ -9,7 +9,12 @@ const quizSchema = new Schema({
         type: String,
         required: true
     },
-    userId: String, // the user who made the quiz
+    userId: { // the user who made the quiz
+        type: String
+    }, 
+    createdBy: {
+        type: String
+    },
     duration: { // this is in minutes
         type: Number,
         required: true,

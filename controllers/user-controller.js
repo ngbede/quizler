@@ -13,8 +13,17 @@ const signup = (req, res) => {
         const hashPassword = bcrypt.hashSync(payload.password, 10) 
         payload.password = hashPassword
         User.create(payload)
-        .then( _ => {
-            return res.json({message: "Account created successfully"})
+        .then( user => {
+            const ttl = "72h" // time to live for access token
+            const accessToken = jwt.sign({...payload, id: user._id}, process.env.private_key, {expiresIn: ttl})
+            const timeStamp = new Date()
+            return res.status(200).json({
+                message: "Account created successfully",
+                accessToken: accessToken,
+                useage: `Token expires in ${ttl}`,
+                user: {name: user.name, email: user.email},
+                createdAt: timeStamp
+            })
         }).catch(err => {
             let errorCode = err.code
             let existingMail = err.keyValue.email
@@ -53,7 +62,8 @@ const login = (req, res) => {
                 message: "Login successful",
                 accessToken: accessToken,
                 useage: `Token expires in ${ttl}`,
-                createdAt: timeStamp
+                user: {name: user.name, email: user.email},
+                createdAt: timeStamp, 
             })
         })
         .catch( err => {

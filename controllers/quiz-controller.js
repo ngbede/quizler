@@ -9,10 +9,11 @@ const getMainPath =  (req, res) => {
     })
 }
 
-const getQuiz = async (req, res) => {
+// no need for auth here, test takers query this endpoint to get question sheet
+const getQuizSheet = async (req, res) => {
     // A query parameter called quizCode can be added to url to query for a quiz by its code
-    const quizCode = req.query.quizCode
-    if(quizCode){
+    const quizCode = req.params.quizCode
+    if(quizCode){ // go through this path for users taking a test
         const query = Quiz.find({code: quizCode})
         // run query
         try {
@@ -30,7 +31,12 @@ const getQuiz = async (req, res) => {
             return res.status(500).json(serverErrorMsg)
         }
     }
-    Quiz.find().then(data => {
+}
+
+const getQuiz = (req, res) => {
+    const userId = req.user.id 
+    // get only a given users created quiz via their id
+    Quiz.find({userId: userId}).then(data => { 
         // data could be an empty array if nothing exists
         return res.status(200).json(data)
     }).catch(err => {
@@ -59,9 +65,12 @@ const getQuizViaId = (req, res) => {
 }
 
 const createNewQuiz =  (req, res) => {
+    // if authorization is successful, we should get the user id in req object
+    const userId = req.user.id 
+    const createdBy = req.user.email;
     const payload = req.body
     Quiz.validate(payload).then( _ => {
-        Quiz.create(payload)
+        Quiz.create({...payload, userId: userId, createdBy: createdBy})
         .then(data => {
             return res.status(200)
             .json({
@@ -136,16 +145,18 @@ const updateQuiz = (req, res) => {
 }
 
 const deleteQuiz = (req, res) => {
+    const userId = req.user.id 
     const docId = req.params.id
     const validId = Types.ObjectId.isValid(docId)
     
     if (!validId) return res.status(404).json({message: "Invalid ID sent"})
     else {
-        const query = Quiz.deleteOne({_id: docId})
+        // only delete quiz for authorized use 
+        const query = Quiz.deleteOne({_id: docId, userId: userId})
         query.exec((error, data) => {
             if (error) return res.status(500).json(serverErrorMsg)
             if (data.deletedCount <= 0){
-                return res.status(202).json({message: `Unable to delete quiz with id ${docId}, please check that the ID is valid`})
+                return res.status(202).json({message: `Unable to delete quiz, check that the ID is valid`})
             }
             return res.status(200).json({message: `Quiz with id ${docId} deleted successfully`})
         }) 
@@ -154,6 +165,7 @@ const deleteQuiz = (req, res) => {
 
 module.exports = {
     getMainPath,
+    getQuizSheet,
     getQuiz,
     getQuizViaId,
     createNewQuiz,
